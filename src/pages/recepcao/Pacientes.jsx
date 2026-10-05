@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, User, Phone, CalendarDays, History, UserPlus } from 'lucide-react'
+import { Search, User, Phone, CalendarDays, History, UserPlus, CreditCard } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
@@ -13,7 +13,8 @@ export function Pacientes() {
 
   const pacientesFiltrados = busca.trim()
     ? pacientes.filter((p) =>
-        p.nome.toLowerCase().includes(busca.toLowerCase())
+        p.nome.toLowerCase().includes(busca.toLowerCase()) ||
+        (p.cpf && p.cpf.replace(/\D/g, '').includes(busca.replace(/\D/g, '')))
       )
     : pacientes
 
@@ -47,7 +48,7 @@ export function Pacientes() {
         />
         <input
           type="search"
-          placeholder="Buscar paciente por nome..."
+          placeholder="Buscar paciente por nome ou CPF..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           aria-label="Buscar paciente"
@@ -92,6 +93,12 @@ export function Pacientes() {
 
                   {/* Detalhes */}
                   <div className="space-y-1.5">
+                    {p.cpf && (
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <CreditCard size={12} className="text-gray-400 shrink-0" />
+                        {p.cpf}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-xs text-gray-600">
                       <Phone size={12} className="text-gray-400 shrink-0" />
                       {p.telefone}

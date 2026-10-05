@@ -1,4 +1,4 @@
-import { ArrowLeft, Phone, CalendarDays, Eye, FileText, MessageSquare, Clock, User } from 'lucide-react'
+import { ArrowLeft, Phone, CalendarDays, Eye, FileText, MessageSquare, Clock, User, CreditCard, AlertTriangle } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import { BadgeTipo, BadgeStatus } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -59,6 +59,39 @@ function LaudoCard({ laudo }) {
           <p className="text-sm text-gray-700 leading-relaxed">{laudo.observacao_medica}</p>
         </div>
       )}
+
+      {laudo.proxima_consulta && (() => {
+        const hoje = new Date()
+        const proxima = new Date(laudo.proxima_consulta + 'T00:00')
+        const diffDias = Math.ceil((proxima - hoje) / (1000 * 60 * 60 * 24))
+        const vencida = diffDias < 0
+        const proximaSemana = diffDias >= 0 && diffDias <= 30
+
+        return (
+          <div className={`flex items-center gap-2 rounded-lg px-3 py-2.5 border ${
+            vencida
+              ? 'bg-red-50 border-red-200'
+              : proximaSemana
+              ? 'bg-amber-50 border-amber-200'
+              : 'bg-indigo-50 border-indigo-100'
+          }`}>
+            {vencida
+              ? <AlertTriangle size={14} className="text-red-500 shrink-0" />
+              : <CalendarDays size={14} className={proximaSemana ? 'text-amber-500 shrink-0' : 'text-indigo-500 shrink-0'} />
+            }
+            <div>
+              <p className={`text-xs font-semibold ${vencida ? 'text-red-700' : proximaSemana ? 'text-amber-700' : 'text-indigo-700'}`}>
+                {vencida ? 'Retorno vencido' : 'Próxima Consulta'}
+              </p>
+              <p className={`text-xs ${vencida ? 'text-red-600' : proximaSemana ? 'text-amber-600' : 'text-indigo-600'}`}>
+                {proxima.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                {vencida && ` · há ${Math.abs(diffDias)} dias`}
+                {proximaSemana && !vencida && ` · em ${diffDias} dias`}
+              </p>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -125,6 +158,12 @@ export function HistoricoPaciente() {
                   <Phone size={14} className="text-gray-400" />
                   {paciente.telefone}
                 </span>
+                {paciente.cpf && (
+                  <span className="flex items-center gap-1.5">
+                    <CreditCard size={14} className="text-gray-400" />
+                    {paciente.cpf}
+                  </span>
+                )}
               </div>
             </div>
             {/* Resumo numérico */}

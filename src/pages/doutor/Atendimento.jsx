@@ -9,6 +9,7 @@ import {
   Save,
   AlertCircle,
   Droplets,
+  CalendarDays,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import { BadgeTipo } from '../../components/ui/Badge'
@@ -59,6 +60,7 @@ const laudoVazio = {
   oe_cilindrico: '',
   oe_eixo: '',
   observacao_medica: '',
+  proxima_consulta: '',
 }
 
 export function Atendimento() {
@@ -171,6 +173,7 @@ export function Atendimento() {
             {paciente.idade} anos ·{' '}
             {new Date(paciente.data_nascimento + 'T00:00').toLocaleDateString('pt-BR')} ·{' '}
             {paciente.telefone}
+            {paciente.cpf && <span className="ml-2 text-gray-400">· CPF: {paciente.cpf}</span>}
           </p>
         </div>
       </div>
@@ -296,6 +299,19 @@ export function Atendimento() {
                       <p className="text-sm text-gray-700">{laudoExistente.observacao_medica}</p>
                     </div>
                   )}
+                  {laudoExistente.proxima_consulta && (
+                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-4 py-3">
+                      <CalendarDays size={16} className="text-indigo-500 shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-indigo-700">Próxima Consulta</p>
+                        <p className="text-sm text-indigo-900 font-medium">
+                          {new Date(laudoExistente.proxima_consulta + 'T00:00').toLocaleDateString('pt-BR', {
+                            day: '2-digit', month: 'long', year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex justify-end">
                     <Button onClick={voltarFila}>
                       <ArrowLeft size={16} />
@@ -328,6 +344,14 @@ export function Atendimento() {
                       rows={4}
                       value={laudoForm.observacao_medica}
                       onChange={(e) => handleCampoLaudo('observacao_medica', e.target.value)}
+                    />
+
+                    <Input
+                      id="proxima_consulta"
+                      label="Próxima Consulta (Retorno)"
+                      type="date"
+                      value={laudoForm.proxima_consulta}
+                      onChange={(e) => handleCampoLaudo('proxima_consulta', e.target.value)}
                     />
 
                     {erroSalvar && (

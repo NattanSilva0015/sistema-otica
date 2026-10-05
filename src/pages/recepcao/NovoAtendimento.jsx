@@ -17,6 +17,7 @@ const campoVazio = {
   nome: '',
   data_nascimento: '',
   telefone: '',
+  cpf: '',
 }
 
 const fichaVazia = {
@@ -53,7 +54,8 @@ export function NovoAtendimento() {
   // ─── Busca de paciente existente ────────────────────────────────────────
   const pacientesFiltrados = buscaPaciente.trim()
     ? pacientes.filter((p) =>
-        p.nome.toLowerCase().includes(buscaPaciente.toLowerCase())
+        p.nome.toLowerCase().includes(buscaPaciente.toLowerCase()) ||
+        (p.cpf && p.cpf.replace(/\D/g, '').includes(buscaPaciente.replace(/\D/g, '')))
       )
     : pacientes.slice(0, 6)
 
@@ -69,6 +71,9 @@ export function NovoAtendimento() {
     if (!dadosPaciente.nome.trim()) e.nome = 'Nome obrigatório'
     if (!dadosPaciente.data_nascimento) e.data_nascimento = 'Data de nascimento obrigatória'
     if (!dadosPaciente.telefone.trim()) e.telefone = 'Telefone obrigatório'
+    if (!dadosPaciente.cpf.trim()) e.cpf = 'CPF obrigatório'
+    else if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(dadosPaciente.cpf) && !/^\d{11}$/.test(dadosPaciente.cpf.replace(/\D/g, '')))
+      e.cpf = 'CPF inválido (use 000.000.000-00)'
     setErros(e)
     return Object.keys(e).length === 0
   }
@@ -217,6 +222,17 @@ export function NovoAtendimento() {
                     }
                     error={erros.telefone}
                   />
+                  <Input
+                    id="cpf"
+                    label="CPF"
+                    placeholder="000.000.000-00"
+                    required
+                    value={dadosPaciente.cpf}
+                    onChange={(e) =>
+                      setDadosPaciente((prev) => ({ ...prev, cpf: e.target.value }))
+                    }
+                    error={erros.cpf}
+                  />
                 </div>
                 <div className="mt-5 flex justify-end">
                   <Button onClick={avancarComNovoPaciente}>
@@ -234,7 +250,7 @@ export function NovoAtendimento() {
               <CardBody>
                 <Input
                   id="busca"
-                  placeholder="Digite o nome do paciente..."
+                  placeholder="Buscar por nome ou CPF..."
                   value={buscaPaciente}
                   onChange={(e) => setBuscaPaciente(e.target.value)}
                   className="mb-4"
@@ -259,7 +275,7 @@ export function NovoAtendimento() {
                               {p.nome}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {p.idade} anos · {p.telefone}
+                              {p.idade} anos · {p.telefone}{p.cpf ? ` · ${p.cpf}` : ''}
                             </p>
                           </div>
                           <ChevronDown

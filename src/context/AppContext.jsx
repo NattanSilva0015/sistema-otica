@@ -9,6 +9,7 @@ const pacientesMock = [
     idade: 34,
     data_nascimento: '1990-03-15',
     telefone: '(11) 98765-4321',
+    cpf: '123.456.789-00',
   },
   {
     id: 'p2',
@@ -16,6 +17,7 @@ const pacientesMock = [
     idade: 52,
     data_nascimento: '1972-07-22',
     telefone: '(11) 91234-5678',
+    cpf: '987.654.321-00',
   },
   {
     id: 'p3',
@@ -23,6 +25,7 @@ const pacientesMock = [
     idade: 28,
     data_nascimento: '1996-11-08',
     telefone: '(11) 99876-5432',
+    cpf: '111.222.333-44',
   },
   {
     id: 'p4',
@@ -30,6 +33,7 @@ const pacientesMock = [
     idade: 45,
     data_nascimento: '1979-01-30',
     telefone: '(11) 97654-3210',
+    cpf: '555.666.777-88',
   },
 ]
 
@@ -102,6 +106,7 @@ const laudosMock = [
     oe_cilindrico: '-0.75',
     oe_eixo: '175',
     observacao_medica: 'Miopia leve. Recomendo uso contínuo dos óculos e retorno em 12 meses.',
+    proxima_consulta: '2027-10-02',
     data_criacao: '2026-10-02',
   },
   {
@@ -114,6 +119,7 @@ const laudosMock = [
     oe_cilindrico: '-0.25',
     oe_eixo: '90',
     observacao_medica: 'Miopia leve bilateral. Primeira prescrição. Orientada sobre o uso e adaptação dos óculos.',
+    proxima_consulta: '2026-09-10',
     data_criacao: '2025-09-10',
   },
   {
@@ -126,6 +132,7 @@ const laudosMock = [
     oe_cilindrico: '-0.50',
     oe_eixo: '165',
     observacao_medica: 'Miopia moderada. Prescrição de óculos para uso permanente.',
+    proxima_consulta: '2026-11-20',
     data_criacao: '2025-11-20',
   },
 ]
