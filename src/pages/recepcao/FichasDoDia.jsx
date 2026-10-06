@@ -1,10 +1,13 @@
-import { CalendarDays, Clock, CheckCircle2, Loader2, MessageSquare, UserPlus, Droplets } from 'lucide-react'
+import { useState } from 'react'
+import { CalendarDays, Clock, CheckCircle2, Loader2, MessageSquare, UserPlus, Droplets, RefreshCw } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
+import { useToast } from '../../context/ToastContext'
 import { BadgeTipo, BadgeStatus } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Card, CardBody } from '../../components/ui/Card'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { Spinner } from '../../components/ui/Spinner'
 
 const statusIcon = {
   aguardando: Clock,
@@ -24,8 +27,26 @@ function formatarHora(dataStr) {
 }
 
 export function FichasDoDia() {
-  const { fichasDeHoje, buscarPacientePorId, setTelaAtual } = useApp()
+  const { fichasDeHoje, buscarPacientePorId, carregarFichasDeHoje, setTelaAtual } = useApp()
+  const toast = useToast()
   const fichas = fichasDeHoje()
+  const [recarregando, setRecarregando] = useState(false)
+
+  async function recarregar() {
+    setRecarregando(true)
+    try {
+      await carregarFichasDeHoje()
+    } catch (err) {
+      toast.error('Erro ao atualizar fichas', err.message)
+    } finally {
+      setRecarregando(false)
+    }
+  }
+
+  // Paciente pode vir do JOIN (_paciente) ou do cache local
+  function getPaciente(ficha) {
+    return ficha._paciente ?? buscarPacientePorId(ficha.paciente_id)
+  }
 
   const contadores = {
     total: fichas.length,
@@ -47,10 +68,16 @@ export function FichasDoDia() {
         title="Fichas do Dia"
         description={hoje.charAt(0).toUpperCase() + hoje.slice(1)}
         action={
-          <Button onClick={() => setTelaAtual('recepcao_novo')}>
-            <UserPlus size={16} />
-            Novo Atendimento
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="secondary" size="sm" onClick={recarregar} disabled={recarregando}>
+              {recarregando ? <Spinner size="sm" /> : <RefreshCw size={15} />}
+              Atualizar
+            </Button>
+            <Button onClick={() => setTelaAtual('recepcao_novo')}>
+              <UserPlus size={16} />
+              Novo Atendimento
+            </Button>
+          </div>
         }
       />
 
@@ -88,7 +115,7 @@ export function FichasDoDia() {
       ) : (
         <div className="space-y-3">
           {fichas.map((ficha) => {
-            const paciente = buscarPacientePorId(ficha.paciente_id)
+            const paciente = getPaciente(ficha)
             const StatusIcon = statusIcon[ficha.status] ?? Clock
 
             return (
